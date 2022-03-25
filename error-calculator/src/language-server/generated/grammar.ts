@@ -15,106 +15,93 @@ export const EpsilonRhoRhoGrammar = (): Grammar => loadedEpsilonRhoRhoGrammar ||
     {
       "$type": "ParserRule",
       "parameters": [],
-      "name": "Model",
+      "name": "Return",
       "hiddenTokens": [],
       "entry": true,
       "alternatives": {
-        "$type": "Alternatives",
-        "elements": [
-          {
-            "$type": "Assignment",
-            "feature": "persons",
-            "operator": "+=",
-            "terminal": {
-              "$type": "RuleCall",
-              "arguments": [],
-              "rule": {
-                "$refText": "Person"
-              }
-            },
-            "elements": []
-          },
-          {
-            "$type": "Assignment",
-            "feature": "greetings",
-            "operator": "+=",
-            "terminal": {
-              "$type": "RuleCall",
-              "arguments": [],
-              "rule": {
-                "$refText": "Greeting"
-              }
-            },
-            "elements": []
+        "$type": "Assignment",
+        "feature": "factor",
+        "operator": "=",
+        "terminal": {
+          "$type": "RuleCall",
+          "arguments": [],
+          "rule": {
+            "$refText": "Factor"
           }
-        ],
-        "cardinality": "*"
+        },
+        "elements": []
       }
     },
     {
       "$type": "ParserRule",
       "parameters": [],
-      "name": "Person",
+      "name": "Factor",
       "hiddenTokens": [],
       "alternatives": {
         "$type": "Group",
         "elements": [
           {
-            "$type": "Keyword",
-            "value": "person",
-            "elements": []
-          },
-          {
             "$type": "Assignment",
-            "feature": "name",
+            "feature": "value",
             "operator": "=",
             "terminal": {
               "$type": "RuleCall",
               "arguments": [],
               "rule": {
-                "$refText": "ID"
+                "$refText": "NUM"
               }
-            }
-          }
-        ]
-      }
-    },
-    {
-      "$type": "ParserRule",
-      "parameters": [],
-      "name": "Greeting",
-      "hiddenTokens": [],
-      "alternatives": {
-        "$type": "Group",
-        "elements": [
-          {
-            "$type": "Keyword",
-            "value": "Hello",
+            },
             "elements": []
           },
           {
-            "$type": "Assignment",
-            "feature": "person",
-            "operator": "=",
-            "terminal": {
-              "$type": "CrossReference",
-              "type": {
-                "$refText": "Person"
-              },
-              "terminal": {
+            "$type": "Group",
+            "elements": [
+              {
                 "$type": "RuleCall",
                 "arguments": [],
                 "rule": {
-                  "$refText": "ID"
+                  "$refText": "PLUS_MINUS"
+                },
+                "elements": []
+              },
+              {
+                "$type": "Assignment",
+                "feature": "error",
+                "operator": "=",
+                "terminal": {
+                  "$type": "RuleCall",
+                  "arguments": [],
+                  "rule": {
+                    "$refText": "NUM"
+                  }
                 }
               }
-            }
-          },
-          {
-            "$type": "Keyword",
-            "value": "!"
+            ],
+            "cardinality": "?"
           }
         ]
+      }
+    },
+    {
+      "$type": "TerminalRule",
+      "name": "NUM",
+      "type": {
+        "$type": "ReturnType",
+        "name": "string"
+      },
+      "terminal": {
+        "$type": "RegexToken",
+        "regex": "[0-9]+(\\\\.[0-9]+)?",
+        "elements": []
+      }
+    },
+    {
+      "$type": "TerminalRule",
+      "name": "PLUS_MINUS",
+      "terminal": {
+        "$type": "RegexToken",
+        "regex": "#",
+        "elements": []
       }
     },
     {
@@ -124,37 +111,6 @@ export const EpsilonRhoRhoGrammar = (): Grammar => loadedEpsilonRhoRhoGrammar ||
       "terminal": {
         "$type": "RegexToken",
         "regex": "\\\\s+",
-        "elements": []
-      }
-    },
-    {
-      "$type": "TerminalRule",
-      "name": "ID",
-      "terminal": {
-        "$type": "RegexToken",
-        "regex": "[_a-zA-Z][\\\\w_]*",
-        "elements": []
-      }
-    },
-    {
-      "$type": "TerminalRule",
-      "name": "INT",
-      "type": {
-        "$type": "ReturnType",
-        "name": "number"
-      },
-      "terminal": {
-        "$type": "RegexToken",
-        "regex": "[0-9]+",
-        "elements": []
-      }
-    },
-    {
-      "$type": "TerminalRule",
-      "name": "STRING",
-      "terminal": {
-        "$type": "RegexToken",
-        "regex": "\\"[^\\"]*\\"|'[^']*'",
         "elements": []
       }
     },

@@ -5,49 +5,38 @@
 
 /* eslint-disable @typescript-eslint/array-type */
 /* eslint-disable @typescript-eslint/no-empty-interface */
-import { AstNode, AstReflection, Reference, isAstNode } from 'langium';
+import { AstNode, AstReflection, isAstNode } from 'langium';
 
-export interface Greeting extends AstNode {
-    readonly $container: Model;
-    person: Reference<Person>
+export interface Factor extends AstNode {
+    readonly $container: Return;
+    error: string
+    value: string
 }
 
-export const Greeting = 'Greeting';
+export const Factor = 'Factor';
 
-export function isGreeting(item: unknown): item is Greeting {
-    return reflection.isInstance(item, Greeting);
+export function isFactor(item: unknown): item is Factor {
+    return reflection.isInstance(item, Factor);
 }
 
-export interface Model extends AstNode {
-    greetings: Array<Greeting>
-    persons: Array<Person>
+export interface Return extends AstNode {
+    factor: Factor
 }
 
-export const Model = 'Model';
+export const Return = 'Return';
 
-export function isModel(item: unknown): item is Model {
-    return reflection.isInstance(item, Model);
+export function isReturn(item: unknown): item is Return {
+    return reflection.isInstance(item, Return);
 }
 
-export interface Person extends AstNode {
-    readonly $container: Model;
-    name: string
-}
+export type EpsilonRhoRhoAstType = 'Factor' | 'Return';
 
-export const Person = 'Person';
-
-export function isPerson(item: unknown): item is Person {
-    return reflection.isInstance(item, Person);
-}
-
-export type EpsilonRhoRhoAstType = 'Greeting' | 'Model' | 'Person';
-
-export type EpsilonRhoRhoAstReference = 'Greeting:person';
+export type EpsilonRhoRhoAstReference = never;
 
 export class EpsilonRhoRhoAstReflection implements AstReflection {
 
     getAllTypes(): string[] {
-        return ['Greeting', 'Model', 'Person'];
+        return ['Factor', 'Return'];
     }
 
     isInstance(node: unknown, type: string): boolean {
@@ -67,9 +56,6 @@ export class EpsilonRhoRhoAstReflection implements AstReflection {
 
     getReferenceType(referenceId: EpsilonRhoRhoAstReference): string {
         switch (referenceId) {
-            case 'Greeting:person': {
-                return Person;
-            }
             default: {
                 throw new Error(`${referenceId} is not a valid reference id.`);
             }

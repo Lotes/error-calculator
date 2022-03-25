@@ -1,18 +1,14 @@
 grammar EpsilonRhoRho
 
-entry Model:
-    (persons+=Person | greetings+=Greeting)*;
+entry Return: factor=Factor;
 
-Person:
-    'person' name=ID;
+Factor:
+    value=NUM (PLUS_MINUS error=NUM)?
+    ;
 
-Greeting:
-    'Hello' person=[Person:ID] '!';
+terminal NUM returns string: /[0-9]+(\.[0-9]+)?/;
+terminal PLUS_MINUS: /#/;
 
 hidden terminal WS: /\s+/;
-terminal ID: /[_a-zA-Z][\w_]*/;
-terminal INT returns number: /[0-9]+/;
-terminal STRING: /"[^"]*"|'[^']*'/;
-
 hidden terminal ML_COMMENT: /\/\*[\s\S]*?\*\//;
 hidden terminal SL_COMMENT: /\/\/[^\n\r]*/;

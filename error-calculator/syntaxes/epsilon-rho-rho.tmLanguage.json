@@ -10,17 +10,7 @@
     },
     {
       "name": "keyword.control.epsilon-rho-rho",
-      "match": "\\b(Hello|person)\\b"
-    },
-    {
-      "name": "string.quoted.double.epsilon-rho-rho",
-      "begin": "\"",
-      "end": "\""
-    },
-    {
-      "name": "string.quoted.single.epsilon-rho-rho",
-      "begin": "'",
-      "end": "'"
+      "match": ""
     }
   ],
   "repository": {

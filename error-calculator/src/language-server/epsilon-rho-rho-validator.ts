@@ -1,5 +1,5 @@
 import { ValidationAcceptor, ValidationCheck, ValidationRegistry } from 'langium';
-import { EpsilonRhoRhoAstType, Person } from './generated/ast';
+import { EpsilonRhoRhoAstType, Factor } from './generated/ast';
 import type { EpsilonRhoRhoServices } from './epsilon-rho-rho-module';
 
 /**
@@ -15,10 +15,18 @@ export class EpsilonRhoRhoValidationRegistry extends ValidationRegistry {
         super(services);
         const validator = services.validation.EpsilonRhoRhoValidator;
         const checks: EpsilonRhoRhoChecks = {
-            Person: validator.checkPersonStartsWithCapital
+            Factor: validator.checkFactorWithErrorHasProperDigits
         };
         this.register(checks, validator);
     }
+}
+
+
+
+export interface Digits {
+    int: string;
+    frac: string;
+    precision: number;
 }
 
 /**
@@ -26,13 +34,31 @@ export class EpsilonRhoRhoValidationRegistry extends ValidationRegistry {
  */
 export class EpsilonRhoRhoValidator {
 
-    checkPersonStartsWithCapital(person: Person, accept: ValidationAcceptor): void {
-        if (person.name) {
-            const firstChar = person.name.substring(0, 1);
-            if (firstChar.toUpperCase() !== firstChar) {
-                accept('warning', 'Person name should start with a capital.', { node: person, property: 'name' });
+    checkFactorWithErrorHasProperDigits(factor: Factor, accept: ValidationAcceptor): void {
+        const value = this.getDigits(factor.value);
+        const error = factor.error ? this.getDigits(factor.error) : null;
+        if (error) {
+            if (error.precision > value.precision) {
+                accept('error', 'The precision of the error is greater than the one for the value. The extra digits are pointless.', { node: factor, property: 'error' });
             }
         }
     }
 
+    private getDigits(num: string): Digits {
+      const periodIndex = num.indexOf(".");
+      if(periodIndex == -1) {
+        return {
+            int: num,
+            frac: "",
+            precision: 0
+        };
+      } else {
+        const frac = num.substring(periodIndex+1);
+        return {
+            int: num.substring(0, periodIndex),
+            frac,
+            precision: frac.length 
+        };
+      }
+    }
 }

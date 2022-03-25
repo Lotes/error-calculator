@@ -1,6 +1,6 @@
 import colors from 'colors';
 import { Command } from 'commander';
-import { Model } from '../language-server/generated/ast';
+import { Return } from '../language-server/generated/ast';
 import { EpsilonRhoRhoLanguageMetaData } from '../language-server/generated/module';
 import { createEpsilonRhoRhoServices } from '../language-server/epsilon-rho-rho-module';
 import { extractAstNode } from './cli-util';
@@ -8,8 +8,8 @@ import { generateJavaScript } from './generator';
 
 export const generateAction = async (fileName: string, opts: GenerateOptions): Promise<void> => {
     const services = createEpsilonRhoRhoServices().EpsilonRhoRho;
-    const model = await extractAstNode<Model>(fileName, services);
-    const generatedFilePath = generateJavaScript(model, fileName, opts.destination);
+    const ret = await extractAstNode<Return>(fileName, services);
+    const generatedFilePath = generateJavaScript(ret, fileName, opts.destination);
     console.log(colors.green(`JavaScript code generated successfully: ${generatedFilePath}`));
 };
 
