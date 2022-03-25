@@ -1,7 +1,16 @@
 import colors from "colors";
-import { Expression, Factor, Return, Term } from "../language-server/generated/ast";
+import {
+  Expression,
+  Factor,
+  Number,
+  Return,
+  Term,
+} from "../language-server/generated/ast";
 
 class ErrorNumber {
+  static negate(left: ErrorNumber) {
+    return new ErrorNumber(-left.value, left.error);
+  }
   constructor(public value: number, public error: number) {}
   toString() {
     return `${this.value}#${this.error}`;
@@ -81,8 +90,23 @@ class SolutionGeneratingVisitor {
     }
   }
   visitFactor(factor: Factor): void {
-    const value = parseFloat(factor.value);
-    const error = parseFloat(factor.error ?? 0);
+    if (factor.expression != null) {
+      this.visitExpression(factor.expression);
+    } else if (factor.negated != null) {
+      this.visitFactor(factor.negated);
+      const left = this.currentFrame.pop()!;
+      const result = ErrorNumber.negate(left);
+      this.currentFrame.push(result);
+      if (this.verbose) {
+        console.log(colors.red(`NEG`));
+      }
+    } else {
+      this.visitNumber(factor.num);
+    }
+  }
+  visitNumber(num: Number) {
+    const value = parseFloat(num.value);
+    const error = parseFloat(num.error ?? 0);
     this.currentFrame.push(new ErrorNumber(value, error));
     if (this.verbose) {
       console.log(colors.green(`PUSH (${value}, ${error})`));

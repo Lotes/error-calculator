@@ -11,8 +11,12 @@ Term: left=Factor TermTailLike;
 TermTail: operator=('*'|'/') right=Factor TermTailLike;
 
 Factor:
-    value=NUM (PLUS_MINUS error=NUM)?
+    num=Number
+    | '(' expression=Expression ')'
+    | '-' negated=Factor
     ;
+
+Number: value=NUM (PLUS_MINUS error=NUM)?;
 
 terminal NUM: /[0-9]+(\.[0-9]+)?/;
 terminal PLUS_MINUS: /#/;

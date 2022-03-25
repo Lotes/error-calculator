@@ -8,7 +8,7 @@
 import { AstNode, AstReflection, isAstNode } from 'langium';
 
 export interface Expression extends AstNode {
-    readonly $container: Return;
+    readonly $container: Factor | Return;
     left: Term
     tail: ExpressionTail
 }
@@ -33,15 +33,28 @@ export function isExpressionTail(item: unknown): item is ExpressionTail {
 }
 
 export interface Factor extends AstNode {
-    readonly $container: Term | TermTail;
-    error: string
-    value: string
+    readonly $container: Factor | Term | TermTail;
+    expression: Expression
+    negated: Factor
+    num: Number
 }
 
 export const Factor = 'Factor';
 
 export function isFactor(item: unknown): item is Factor {
     return reflection.isInstance(item, Factor);
+}
+
+export interface Number extends AstNode {
+    readonly $container: Factor;
+    error: string
+    value: string
+}
+
+export const Number = 'Number';
+
+export function isNumber(item: unknown): item is Number {
+    return reflection.isInstance(item, Number);
 }
 
 export interface Return extends AstNode {
@@ -79,14 +92,14 @@ export function isTermTail(item: unknown): item is TermTail {
     return reflection.isInstance(item, TermTail);
 }
 
-export type EpsilonRhoRhoAstType = 'Expression' | 'ExpressionTail' | 'Factor' | 'Return' | 'Term' | 'TermTail';
+export type EpsilonRhoRhoAstType = 'Expression' | 'ExpressionTail' | 'Factor' | 'Number' | 'Return' | 'Term' | 'TermTail';
 
 export type EpsilonRhoRhoAstReference = never;
 
 export class EpsilonRhoRhoAstReflection implements AstReflection {
 
     getAllTypes(): string[] {
-        return ['Expression', 'ExpressionTail', 'Factor', 'Return', 'Term', 'TermTail'];
+        return ['Expression', 'ExpressionTail', 'Factor', 'Number', 'Return', 'Term', 'TermTail'];
     }
 
     isInstance(node: unknown, type: string): boolean {

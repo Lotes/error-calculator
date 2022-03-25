@@ -1,5 +1,5 @@
 import { ValidationAcceptor, ValidationCheck, ValidationRegistry } from 'langium';
-import { EpsilonRhoRhoAstType, Factor } from './generated/ast';
+import { EpsilonRhoRhoAstType, Number } from './generated/ast';
 import type { EpsilonRhoRhoServices } from './epsilon-rho-rho-module';
 
 /**
@@ -15,7 +15,7 @@ export class EpsilonRhoRhoValidationRegistry extends ValidationRegistry {
         super(services);
         const validator = services.validation.EpsilonRhoRhoValidator;
         const checks: EpsilonRhoRhoChecks = {
-            Factor: validator.checkFactorWithErrorHasProperDigits
+            Number: validator.checkFactorWithErrorHasProperDigits
         };
         this.register(checks, validator);
     }
@@ -34,15 +34,15 @@ export interface Digits {
  */
 export class EpsilonRhoRhoValidator {
 
-    checkFactorWithErrorHasProperDigits(factor: Factor, accept: ValidationAcceptor): void {
-        const value = this.getDigits(factor.value);
-        const error = factor.error ? this.getDigits(factor.error) : null;
+    checkFactorWithErrorHasProperDigits(numb0r: Number, accept: ValidationAcceptor): void {
+        const value = this.getDigits(numb0r.value);
+        const error = numb0r.error ? this.getDigits(numb0r.error) : null;
         if (error) {
             if (error.precision > value.precision) {
-                accept('error', 'The precision of the error is greater than the one for the value. The extra digits are pointless.', { node: factor, property: 'error' });
+                accept('error', 'The precision of the error is greater than the one for the value. The extra digits are pointless.', { node: numb0r, property: 'error' });
             }
             if (error.precision < value.precision) {
-                accept('warning', 'The precision of the value is greater than the one for the error. The extra digits are suspicious.', { node: factor, property: 'value' });
+                accept('warning', 'The precision of the value is greater than the one for the error. The extra digits are suspicious.', { node: numb0r, property: 'value' });
             }
         }
     }

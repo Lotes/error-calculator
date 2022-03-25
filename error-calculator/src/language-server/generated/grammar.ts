@@ -242,6 +242,78 @@ export const EpsilonRhoRhoGrammar = (): Grammar => loadedEpsilonRhoRhoGrammar ||
       "name": "Factor",
       "hiddenTokens": [],
       "alternatives": {
+        "$type": "Alternatives",
+        "elements": [
+          {
+            "$type": "Assignment",
+            "feature": "num",
+            "operator": "=",
+            "terminal": {
+              "$type": "RuleCall",
+              "arguments": [],
+              "rule": {
+                "$refText": "Number"
+              }
+            },
+            "elements": []
+          },
+          {
+            "$type": "Group",
+            "elements": [
+              {
+                "$type": "Keyword",
+                "value": "(",
+                "elements": []
+              },
+              {
+                "$type": "Assignment",
+                "feature": "expression",
+                "operator": "=",
+                "terminal": {
+                  "$type": "RuleCall",
+                  "arguments": [],
+                  "rule": {
+                    "$refText": "Expression"
+                  }
+                }
+              },
+              {
+                "$type": "Keyword",
+                "value": ")"
+              }
+            ]
+          },
+          {
+            "$type": "Group",
+            "elements": [
+              {
+                "$type": "Keyword",
+                "value": "-",
+                "elements": []
+              },
+              {
+                "$type": "Assignment",
+                "feature": "negated",
+                "operator": "=",
+                "terminal": {
+                  "$type": "RuleCall",
+                  "arguments": [],
+                  "rule": {
+                    "$refText": "Factor"
+                  }
+                }
+              }
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "$type": "ParserRule",
+      "parameters": [],
+      "name": "Number",
+      "hiddenTokens": [],
+      "alternatives": {
         "$type": "Group",
         "elements": [
           {
