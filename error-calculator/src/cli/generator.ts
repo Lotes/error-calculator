@@ -1,5 +1,5 @@
 import colors from "colors";
-import { Factor, Return, Term } from "../language-server/generated/ast";
+import { Expression, Factor, Return, Term } from "../language-server/generated/ast";
 
 class ErrorNumber {
   constructor(public value: number, public error: number) {}
@@ -8,6 +8,16 @@ class ErrorNumber {
   }
   get relativeError() {
     return this.error / this.value;
+  }
+  static add(lhs: ErrorNumber, rhs: ErrorNumber): ErrorNumber {
+    const value = lhs.value + rhs.value;
+    const error = lhs.error + rhs.error;
+    return new ErrorNumber(value, error);
+  }
+  static subtract(lhs: ErrorNumber, rhs: ErrorNumber): ErrorNumber {
+    const value = lhs.value - rhs.value;
+    const error = lhs.error + rhs.error;
+    return new ErrorNumber(value, error);
   }
   static multiply(lhs: ErrorNumber, rhs: ErrorNumber): ErrorNumber {
     const value = lhs.value * rhs.value;
@@ -29,10 +39,28 @@ class SolutionGeneratingVisitor {
   }
   constructor(private verbose: boolean) {}
   visitReturn(ret: Return): void {
-    this.visitTerm(ret.left);
+    this.visitExpression(ret.left);
     const result = this.currentFrame.pop()!;
-    console.log(result.toString());
+    console.log(colors.bgRed(colors.white(result.toString())));
     console.log("DONE");
+  }
+  visitExpression(expression: Expression) {
+    let tail = expression.tail;
+    this.visitTerm(expression.left);
+    while (tail != null) {
+      this.visitTerm(tail.right);
+      const isAddition = tail.operator === "+";
+      const right = this.currentFrame.pop()!;
+      const left = this.currentFrame.pop()!;
+      const result = isAddition
+        ? ErrorNumber.add(left, right)
+        : ErrorNumber.subtract(left, right);
+      this.currentFrame.push(result);
+      if (this.verbose) {
+        console.log(colors.red(`${isAddition ? "ADD" : "SUB"}`));
+      }
+      tail = tail.tail;
+    }
   }
   visitTerm(term: Term): void {
     let tail = term.tail;

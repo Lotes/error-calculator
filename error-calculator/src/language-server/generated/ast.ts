@@ -7,6 +7,31 @@
 /* eslint-disable @typescript-eslint/no-empty-interface */
 import { AstNode, AstReflection, isAstNode } from 'langium';
 
+export interface Expression extends AstNode {
+    readonly $container: Return;
+    left: Term
+    tail: ExpressionTail
+}
+
+export const Expression = 'Expression';
+
+export function isExpression(item: unknown): item is Expression {
+    return reflection.isInstance(item, Expression);
+}
+
+export interface ExpressionTail extends AstNode {
+    readonly $container: Expression | ExpressionTail;
+    operator: '+' | '-'
+    right: Term
+    tail: ExpressionTail
+}
+
+export const ExpressionTail = 'ExpressionTail';
+
+export function isExpressionTail(item: unknown): item is ExpressionTail {
+    return reflection.isInstance(item, ExpressionTail);
+}
+
 export interface Factor extends AstNode {
     readonly $container: Term | TermTail;
     error: string
@@ -20,7 +45,7 @@ export function isFactor(item: unknown): item is Factor {
 }
 
 export interface Return extends AstNode {
-    left: Term
+    left: Expression
 }
 
 export const Return = 'Return';
@@ -30,7 +55,7 @@ export function isReturn(item: unknown): item is Return {
 }
 
 export interface Term extends AstNode {
-    readonly $container: Return;
+    readonly $container: Expression | ExpressionTail;
     left: Factor
     tail: TermTail
 }
@@ -54,14 +79,14 @@ export function isTermTail(item: unknown): item is TermTail {
     return reflection.isInstance(item, TermTail);
 }
 
-export type EpsilonRhoRhoAstType = 'Factor' | 'Return' | 'Term' | 'TermTail';
+export type EpsilonRhoRhoAstType = 'Expression' | 'ExpressionTail' | 'Factor' | 'Return' | 'Term' | 'TermTail';
 
 export type EpsilonRhoRhoAstReference = never;
 
 export class EpsilonRhoRhoAstReflection implements AstReflection {
 
     getAllTypes(): string[] {
-        return ['Factor', 'Return', 'Term', 'TermTail'];
+        return ['Expression', 'ExpressionTail', 'Factor', 'Return', 'Term', 'TermTail'];
     }
 
     isInstance(node: unknown, type: string): boolean {

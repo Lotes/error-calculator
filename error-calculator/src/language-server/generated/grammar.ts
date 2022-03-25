@@ -26,10 +26,112 @@ export const EpsilonRhoRhoGrammar = (): Grammar => loadedEpsilonRhoRhoGrammar ||
           "$type": "RuleCall",
           "arguments": [],
           "rule": {
-            "$refText": "Term"
+            "$refText": "Expression"
           }
         },
         "elements": []
+      }
+    },
+    {
+      "$type": "ParserRule",
+      "parameters": [],
+      "name": "ExpressionTailLike",
+      "hiddenTokens": [],
+      "fragment": true,
+      "alternatives": {
+        "$type": "Assignment",
+        "feature": "tail",
+        "operator": "=",
+        "terminal": {
+          "$type": "RuleCall",
+          "arguments": [],
+          "rule": {
+            "$refText": "ExpressionTail"
+          }
+        },
+        "cardinality": "?",
+        "elements": []
+      }
+    },
+    {
+      "$type": "ParserRule",
+      "parameters": [],
+      "name": "Expression",
+      "hiddenTokens": [],
+      "alternatives": {
+        "$type": "Group",
+        "elements": [
+          {
+            "$type": "Assignment",
+            "feature": "left",
+            "operator": "=",
+            "terminal": {
+              "$type": "RuleCall",
+              "arguments": [],
+              "rule": {
+                "$refText": "Term"
+              }
+            },
+            "elements": []
+          },
+          {
+            "$type": "RuleCall",
+            "arguments": [],
+            "rule": {
+              "$refText": "ExpressionTailLike"
+            }
+          }
+        ]
+      }
+    },
+    {
+      "$type": "ParserRule",
+      "parameters": [],
+      "name": "ExpressionTail",
+      "hiddenTokens": [],
+      "alternatives": {
+        "$type": "Group",
+        "elements": [
+          {
+            "$type": "Assignment",
+            "feature": "operator",
+            "operator": "=",
+            "terminal": {
+              "$type": "Alternatives",
+              "elements": [
+                {
+                  "$type": "Keyword",
+                  "value": "+",
+                  "elements": []
+                },
+                {
+                  "$type": "Keyword",
+                  "value": "-"
+                }
+              ]
+            },
+            "elements": []
+          },
+          {
+            "$type": "Assignment",
+            "feature": "right",
+            "operator": "=",
+            "terminal": {
+              "$type": "RuleCall",
+              "arguments": [],
+              "rule": {
+                "$refText": "Term"
+              }
+            }
+          },
+          {
+            "$type": "RuleCall",
+            "arguments": [],
+            "rule": {
+              "$refText": "ExpressionTailLike"
+            }
+          }
+        ]
       }
     },
     {
