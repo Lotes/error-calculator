@@ -1,0 +1,12 @@
+{
+    "projectName": "EpsilonRhoRho",
+    "languages": [{
+        "id": "epsilon-rho-rho",
+        "grammar": "src/language-server/epsilon-rho-rho.langium",
+        "fileExtensions": [".err"],
+        "textMate": {
+            "out": "syntaxes/epsilon-rho-rho.tmLanguage.json"
+        }
+    }],
+    "out": "src/language-server/generated"
+}

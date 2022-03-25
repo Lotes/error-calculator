@@ -1,0 +1,57 @@
+{
+  "name": "epsilon-rho-rho",
+  "scopeName": "source.epsilon-rho-rho",
+  "fileTypes": [
+    ".err"
+  ],
+  "patterns": [
+    {
+      "include": "#comments"
+    },
+    {
+      "name": "keyword.control.epsilon-rho-rho",
+      "match": "\\b(Hello|person)\\b"
+    },
+    {
+      "name": "string.quoted.double.epsilon-rho-rho",
+      "begin": "\"",
+      "end": "\""
+    },
+    {
+      "name": "string.quoted.single.epsilon-rho-rho",
+      "begin": "'",
+      "end": "'"
+    }
+  ],
+  "repository": {
+    "comments": {
+      "patterns": [
+        {
+          "name": "comment.block.epsilon-rho-rho",
+          "begin": "/\\*",
+          "beginCaptures": {
+            "0": {
+              "name": "punctuation.definition.comment.epsilon-rho-rho"
+            }
+          },
+          "end": "\\*/",
+          "endCaptures": {
+            "0": {
+              "name": "punctuation.definition.comment.epsilon-rho-rho"
+            }
+          }
+        },
+        {
+          "begin": "//",
+          "beginCaptures": {
+            "1": {
+              "name": "punctuation.whitespace.comment.leading.epsilon-rho-rho"
+            }
+          },
+          "end": "(?=$)",
+          "name": "comment.line.epsilon-rho-rho"
+        }
+      ]
+    }
+  }
+}
