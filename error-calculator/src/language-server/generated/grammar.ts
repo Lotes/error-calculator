@@ -20,16 +20,118 @@ export const EpsilonRhoRhoGrammar = (): Grammar => loadedEpsilonRhoRhoGrammar ||
       "entry": true,
       "alternatives": {
         "$type": "Assignment",
-        "feature": "factor",
+        "feature": "left",
         "operator": "=",
         "terminal": {
           "$type": "RuleCall",
           "arguments": [],
           "rule": {
-            "$refText": "Factor"
+            "$refText": "Term"
           }
         },
         "elements": []
+      }
+    },
+    {
+      "$type": "ParserRule",
+      "parameters": [],
+      "name": "TermTailLike",
+      "hiddenTokens": [],
+      "fragment": true,
+      "alternatives": {
+        "$type": "Assignment",
+        "feature": "tail",
+        "operator": "=",
+        "terminal": {
+          "$type": "RuleCall",
+          "arguments": [],
+          "rule": {
+            "$refText": "TermTail"
+          }
+        },
+        "cardinality": "?",
+        "elements": []
+      }
+    },
+    {
+      "$type": "ParserRule",
+      "parameters": [],
+      "name": "Term",
+      "hiddenTokens": [],
+      "alternatives": {
+        "$type": "Group",
+        "elements": [
+          {
+            "$type": "Assignment",
+            "feature": "left",
+            "operator": "=",
+            "terminal": {
+              "$type": "RuleCall",
+              "arguments": [],
+              "rule": {
+                "$refText": "Factor"
+              }
+            },
+            "elements": []
+          },
+          {
+            "$type": "RuleCall",
+            "arguments": [],
+            "rule": {
+              "$refText": "TermTailLike"
+            }
+          }
+        ]
+      }
+    },
+    {
+      "$type": "ParserRule",
+      "parameters": [],
+      "name": "TermTail",
+      "hiddenTokens": [],
+      "alternatives": {
+        "$type": "Group",
+        "elements": [
+          {
+            "$type": "Assignment",
+            "feature": "operator",
+            "operator": "=",
+            "terminal": {
+              "$type": "Alternatives",
+              "elements": [
+                {
+                  "$type": "Keyword",
+                  "value": "*",
+                  "elements": []
+                },
+                {
+                  "$type": "Keyword",
+                  "value": "/"
+                }
+              ]
+            },
+            "elements": []
+          },
+          {
+            "$type": "Assignment",
+            "feature": "right",
+            "operator": "=",
+            "terminal": {
+              "$type": "RuleCall",
+              "arguments": [],
+              "rule": {
+                "$refText": "Factor"
+              }
+            }
+          },
+          {
+            "$type": "RuleCall",
+            "arguments": [],
+            "rule": {
+              "$refText": "TermTailLike"
+            }
+          }
+        ]
       }
     },
     {
@@ -85,10 +187,6 @@ export const EpsilonRhoRhoGrammar = (): Grammar => loadedEpsilonRhoRhoGrammar ||
     {
       "$type": "TerminalRule",
       "name": "NUM",
-      "type": {
-        "$type": "ReturnType",
-        "name": "string"
-      },
       "terminal": {
         "$type": "RegexToken",
         "regex": "[0-9]+(\\\\.[0-9]+)?",

@@ -1,20 +1,18 @@
-import colors from 'colors';
 import { Command } from 'commander';
 import { Return } from '../language-server/generated/ast';
 import { EpsilonRhoRhoLanguageMetaData } from '../language-server/generated/module';
 import { createEpsilonRhoRhoServices } from '../language-server/epsilon-rho-rho-module';
 import { extractAstNode } from './cli-util';
-import { generateJavaScript } from './generator';
+import { generateSolution } from './generator';
 
 export const generateAction = async (fileName: string, opts: GenerateOptions): Promise<void> => {
     const services = createEpsilonRhoRhoServices().EpsilonRhoRho;
     const ret = await extractAstNode<Return>(fileName, services);
-    const generatedFilePath = generateJavaScript(ret, fileName, opts.destination);
-    console.log(colors.green(`JavaScript code generated successfully: ${generatedFilePath}`));
+    generateSolution(ret, fileName, opts.verbose);
 };
 
 export type GenerateOptions = {
-    destination?: string;
+    verbose: boolean;
 }
 
 export default function(): void {
@@ -28,8 +26,8 @@ export default function(): void {
     program
         .command('generate')
         .argument('<file>', `source file (possible file extensions: ${fileExtensions})`)
-        .option('-d, --destination <dir>', 'destination directory of generating')
-        .description('generates JavaScript code that prints "Hello, {name}!" for each greeting in a source file')
+        .option('-v, --verbose', 'Outputs every single calculation step')
+        .description('Plots the solution for the given error calculation.')
         .action(generateAction);
 
     program.parse(process.argv);

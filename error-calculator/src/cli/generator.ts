@@ -1,20 +1,72 @@
-import fs from 'fs';
-import { CompositeGeneratorNode, NL, processGeneratorNode } from 'langium';
-import path from 'path';
-import { Return } from '../language-server/generated/ast';
-import { extractDestinationAndName } from './cli-util';
+import colors from "colors";
+import { Factor, Return, Term } from "../language-server/generated/ast";
 
-export function generateJavaScript(ret: Return, filePath: string, destination: string | undefined): string {
-    const data = extractDestinationAndName(filePath, destination);
-    const generatedFilePath = `${path.join(data.destination, data.name)}.js`;
+class ErrorNumber {
+  constructor(public value: number, public error: number) {}
+  toString() {
+    return `${this.value}#${this.error}`;
+  }
+  get relativeError() {
+    return this.error / this.value;
+  }
+  static multiply(lhs: ErrorNumber, rhs: ErrorNumber): ErrorNumber {
+    const value = lhs.value * rhs.value;
+    const relativeError = lhs.relativeError + rhs.relativeError;
+    return new ErrorNumber(value, value * relativeError);
+  }
+  static divide(lhs: ErrorNumber, rhs: ErrorNumber): ErrorNumber {
+    const value = lhs.value / rhs.value;
+    const relativeError = lhs.relativeError + rhs.relativeError;
+    return new ErrorNumber(value, value * relativeError);
+  }
+}
+type StackFrame = ErrorNumber[];
 
-    const fileNode = new CompositeGeneratorNode();
-    fileNode.append('"use strict";', NL, NL);
-    fileNode.append(`console.log('Hello, ${ret.factor.value}+/-${ret.factor.error}!');`, NL);
-
-    if (!fs.existsSync(data.destination)) {
-        fs.mkdirSync(data.destination, { recursive: true });
+class SolutionGeneratingVisitor {
+  private stack: StackFrame[] = [[]];
+  private get currentFrame() {
+    return this.stack[this.stack.length - 1];
+  }
+  constructor(private verbose: boolean) {}
+  visitReturn(ret: Return): void {
+    this.visitTerm(ret.left);
+    const result = this.currentFrame.pop()!;
+    console.log(result.toString());
+    console.log("DONE");
+  }
+  visitTerm(term: Term): void {
+    let tail = term.tail;
+    this.visitFactor(term.left);
+    while (tail != null) {
+      this.visitFactor(tail.right);
+      const isMultiplication = tail.operator === "*";
+      const right = this.currentFrame.pop()!;
+      const left = this.currentFrame.pop()!;
+      const result = isMultiplication
+        ? ErrorNumber.multiply(left, right)
+        : ErrorNumber.divide(left, right);
+      this.currentFrame.push(result);
+      if (this.verbose) {
+        console.log(colors.red(`${isMultiplication ? "MUL" : "DIV"}`));
+      }
+      tail = tail.tail;
     }
-    fs.writeFileSync(generatedFilePath, processGeneratorNode(fileNode));
-    return generatedFilePath;
+  }
+  visitFactor(factor: Factor): void {
+    const value = parseFloat(factor.value);
+    const error = parseFloat(factor.error ?? 0);
+    this.currentFrame.push(new ErrorNumber(value, error));
+    if (this.verbose) {
+      console.log(colors.green(`PUSH (${value}, ${error})`));
+    }
+  }
+}
+
+export function generateSolution(
+  ret: Return,
+  filePath: string,
+  verbose: boolean
+): void {
+  const visitor = new SolutionGeneratingVisitor(verbose);
+  visitor.visitReturn(ret);
 }

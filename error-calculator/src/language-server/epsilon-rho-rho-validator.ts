@@ -41,6 +41,9 @@ export class EpsilonRhoRhoValidator {
             if (error.precision > value.precision) {
                 accept('error', 'The precision of the error is greater than the one for the value. The extra digits are pointless.', { node: factor, property: 'error' });
             }
+            if (error.precision < value.precision) {
+                accept('warning', 'The precision of the value is greater than the one for the error. The extra digits are suspicious.', { node: factor, property: 'value' });
+            }
         }
     }
 

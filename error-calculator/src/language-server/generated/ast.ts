@@ -8,7 +8,7 @@
 import { AstNode, AstReflection, isAstNode } from 'langium';
 
 export interface Factor extends AstNode {
-    readonly $container: Return;
+    readonly $container: Term | TermTail;
     error: string
     value: string
 }
@@ -20,7 +20,7 @@ export function isFactor(item: unknown): item is Factor {
 }
 
 export interface Return extends AstNode {
-    factor: Factor
+    left: Term
 }
 
 export const Return = 'Return';
@@ -29,14 +29,39 @@ export function isReturn(item: unknown): item is Return {
     return reflection.isInstance(item, Return);
 }
 
-export type EpsilonRhoRhoAstType = 'Factor' | 'Return';
+export interface Term extends AstNode {
+    readonly $container: Return;
+    left: Factor
+    tail: TermTail
+}
+
+export const Term = 'Term';
+
+export function isTerm(item: unknown): item is Term {
+    return reflection.isInstance(item, Term);
+}
+
+export interface TermTail extends AstNode {
+    readonly $container: Term | TermTail;
+    operator: '*' | '/'
+    right: Factor
+    tail: TermTail
+}
+
+export const TermTail = 'TermTail';
+
+export function isTermTail(item: unknown): item is TermTail {
+    return reflection.isInstance(item, TermTail);
+}
+
+export type EpsilonRhoRhoAstType = 'Factor' | 'Return' | 'Term' | 'TermTail';
 
 export type EpsilonRhoRhoAstReference = never;
 
 export class EpsilonRhoRhoAstReflection implements AstReflection {
 
     getAllTypes(): string[] {
-        return ['Factor', 'Return'];
+        return ['Factor', 'Return', 'Term', 'TermTail'];
     }
 
     isInstance(node: unknown, type: string): boolean {
