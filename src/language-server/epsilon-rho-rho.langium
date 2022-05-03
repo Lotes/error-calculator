@@ -1,14 +1,15 @@
 grammar EpsilonRhoRho
 
-entry Return: variables+=Variable* left=Expression;
+entry Return:
+    variables+=Variable* left=Expression
+    ;
 
-fragment ExpressionTailLike: tail=ExpressionTail?;
-Expression: left=Term ExpressionTailLike;
-ExpressionTail: operator=('+'|'-') right=Term ExpressionTailLike;
+Expression:
+    left=Term ({infer Expression.left = current}operator=('+'|'-') right=Term)*
+    ;
 
-fragment TermTailLike: tail=TermTail?;
-Term: left=Factor TermTailLike;
-TermTail: operator=('*'|'/') right=Factor TermTailLike;
+Term:
+    left=Factor ({infer Term.left=current} operator=('*'|'/') right=Factor)*;
 
 Factor:
     num=Number

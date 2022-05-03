@@ -29,8 +29,8 @@ export type EpsilonRhoRhoServices = LangiumServices & EpsilonRhoRhoAddedServices
  */
 export const EpsilonRhoRhoModule: Module<EpsilonRhoRhoServices, PartialLangiumServices & EpsilonRhoRhoAddedServices> = {
     references: { 
-        ScopeProvider: (services) => new EpsilonRhoRhoScopeProvider(services),
-        ScopeComputation: (services) => new EpsilonRhoRhoScopeComputation(services),
+       // ScopeProvider: (services) => new EpsilonRhoRhoScopeProvider(services),
+        //ScopeComputation: (services) => new EpsilonRhoRhoScopeComputation(services),
     },
     validation: {
         ValidationRegistry: (services) => new EpsilonRhoRhoValidationRegistry(services),
