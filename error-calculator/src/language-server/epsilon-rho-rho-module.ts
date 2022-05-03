@@ -5,6 +5,7 @@ import {
 import { EpsilonRhoRhoGeneratedModule, EpsilonRhoRhoGeneratedSharedModule } from './generated/module';
 import { EpsilonRhoRhoValidationRegistry, EpsilonRhoRhoValidator } from './epsilon-rho-rho-validator';
 import { EpsilonRhoRhoScopeComputation } from './epsilon-rho-rho-scope';
+import { EpsilonRhoRhoScopeProvider  } from "./epsilon-rho-rho-scope-provider";
 
 /**
  * Declaration of custom services - add your own service classes here.

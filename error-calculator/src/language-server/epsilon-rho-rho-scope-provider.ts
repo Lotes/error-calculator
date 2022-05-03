@@ -1,11 +1,7 @@
-import { AstNode, DefaultScopeProvider, LangiumServices, Scope } from "langium";
+import { DefaultScopeProvider, LangiumServices } from "langium";
 
-export class PhilyraScopeProvider extends DefaultScopeProvider {
+export class EpsilonRhoRhoScopeProvider extends DefaultScopeProvider {
   constructor(services: LangiumServices) {
     super(services);
-  }
-
-  getScope(node: AstNode, referenceId: string): Scope {
-      
   }
 }
