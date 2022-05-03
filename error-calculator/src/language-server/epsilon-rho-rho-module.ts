@@ -4,6 +4,7 @@ import {
 } from 'langium';
 import { EpsilonRhoRhoGeneratedModule, EpsilonRhoRhoGeneratedSharedModule } from './generated/module';
 import { EpsilonRhoRhoValidationRegistry, EpsilonRhoRhoValidator } from './epsilon-rho-rho-validator';
+import { EpsilonRhoRhoScopeComputation } from './epsilon-rho-rho-scope';
 
 /**
  * Declaration of custom services - add your own service classes here.
@@ -26,6 +27,10 @@ export type EpsilonRhoRhoServices = LangiumServices & EpsilonRhoRhoAddedServices
  * selected services, while the custom services must be fully specified.
  */
 export const EpsilonRhoRhoModule: Module<EpsilonRhoRhoServices, PartialLangiumServices & EpsilonRhoRhoAddedServices> = {
+    references: { 
+        ScopeProvider: (services) => new EpsilonRhoRhoScopeProvider(services),
+        ScopeComputation: (services) => new EpsilonRhoRhoScopeComputation(services),
+    },
     validation: {
         ValidationRegistry: (services) => new EpsilonRhoRhoValidationRegistry(services),
         EpsilonRhoRhoValidator: () => new EpsilonRhoRhoValidator()

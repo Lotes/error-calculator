@@ -39,17 +39,33 @@ class ErrorNumber {
     return new ErrorNumber(value, value * relativeError);
   }
 }
-type StackFrame = ErrorNumber[];
+
+class StackFrame {
+  constructor(
+    private locals: ErrorNumber[],
+    private variables: { [name: string]: ErrorNumber },
+    private parentFrame: StackFrame|undefined = undefined
+  ) {}
+  defineVariable(name: string, num: ErrorNumber) { this.variables[name] = num; }
+  getVariable(name: string): ErrorNumber { return this.variables[name] || this.parentFrame?.getVariable(name) }
+  push(num: ErrorNumber) { this.locals.push(num); } 
+  pop(): ErrorNumber { return this.locals.pop()!; } 
+}
 
 class SolutionGeneratingVisitor {
-  private stack: StackFrame[] = [[]];
+  private stack: StackFrame = new StackFrame([], {});
   private get currentFrame() {
-    return this.stack[this.stack.length - 1];
+    return this.stack;
   }
   constructor(private verbose: boolean) {}
   visitReturn(ret: Return): void {
+    ret.variables.forEach((variable) => {
+      const name = variable.name;
+      const num = this.currentFrame.pop();
+      this.currentFrame.defineVariable(name, num);
+    });
     this.visitExpression(ret.left);
-    const result = this.currentFrame.pop()!;
+    const result = this.currentFrame.pop();
     console.log(colors.bgRed(colors.white(result.toString())));
     console.log("DONE");
   }
@@ -59,8 +75,8 @@ class SolutionGeneratingVisitor {
     while (tail != null) {
       this.visitTerm(tail.right);
       const isAddition = tail.operator === "+";
-      const right = this.currentFrame.pop()!;
-      const left = this.currentFrame.pop()!;
+      const right = this.currentFrame.pop();
+      const left = this.currentFrame.pop();
       const result = isAddition
         ? ErrorNumber.add(left, right)
         : ErrorNumber.subtract(left, right);
@@ -77,8 +93,8 @@ class SolutionGeneratingVisitor {
     while (tail != null) {
       this.visitFactor(tail.right);
       const isMultiplication = tail.operator === "*";
-      const right = this.currentFrame.pop()!;
-      const left = this.currentFrame.pop()!;
+      const right = this.currentFrame.pop();
+      const left = this.currentFrame.pop();
       const result = isMultiplication
         ? ErrorNumber.multiply(left, right)
         : ErrorNumber.divide(left, right);
@@ -94,14 +110,18 @@ class SolutionGeneratingVisitor {
       this.visitExpression(factor.expression);
     } else if (factor.negated != null) {
       this.visitFactor(factor.negated);
-      const left = this.currentFrame.pop()!;
+      const left = this.currentFrame.pop();
       const result = ErrorNumber.negate(left);
       this.currentFrame.push(result);
       if (this.verbose) {
         console.log(colors.red(`NEG`));
       }
-    } else {
+    } else if (factor.num != null) {
       this.visitNumber(factor.num);
+    } else {
+      const name = factor.varUsage.ref?.name!;
+      const num = this.currentFrame.getVariable(name);
+      this.currentFrame.push(num);
     }
   }
   visitNumber(num: Number) {

@@ -10,7 +10,7 @@
     },
     {
       "name": "keyword.control.epsilon-rho-rho",
-      "match": ""
+      "match": "\\b(var)\\b"
     }
   ],
   "repository": {

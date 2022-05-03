@@ -1,6 +1,6 @@
 grammar EpsilonRhoRho
 
-entry Return: left=Expression;
+entry Return: variables+=Variable* left=Expression;
 
 fragment ExpressionTailLike: tail=ExpressionTail?;
 Expression: left=Term ExpressionTailLike;
@@ -14,12 +14,14 @@ Factor:
     num=Number
     | '(' expression=Expression ')'
     | '-' negated=Factor
+    | varUsage=[Variable]
     ;
-
+Variable: 'var' name=ID '=' Expression ';';
 Number: value=NUM (PLUS_MINUS error=NUM)?;
 
 terminal NUM: /[0-9]+(\.[0-9]+)?/;
-terminal PLUS_MINUS: /#/;
+terminal PLUS_MINUS: '#';
+terminal ID: /[a-zA-Z_][a-zA-Z_0-9]*/;
 
 hidden terminal WS: /\s+/;
 hidden terminal ML_COMMENT: /\/\*[\s\S]*?\*\//;

@@ -19,17 +19,35 @@ export const EpsilonRhoRhoGrammar = (): Grammar => loadedEpsilonRhoRhoGrammar ||
       "hiddenTokens": [],
       "entry": true,
       "alternatives": {
-        "$type": "Assignment",
-        "feature": "left",
-        "operator": "=",
-        "terminal": {
-          "$type": "RuleCall",
-          "arguments": [],
-          "rule": {
-            "$refText": "Expression"
+        "$type": "Group",
+        "elements": [
+          {
+            "$type": "Assignment",
+            "feature": "variables",
+            "operator": "+=",
+            "terminal": {
+              "$type": "RuleCall",
+              "arguments": [],
+              "rule": {
+                "$refText": "Variable"
+              }
+            },
+            "cardinality": "*",
+            "elements": []
+          },
+          {
+            "$type": "Assignment",
+            "feature": "left",
+            "operator": "=",
+            "terminal": {
+              "$type": "RuleCall",
+              "arguments": [],
+              "rule": {
+                "$refText": "Expression"
+              }
+            }
           }
-        },
-        "elements": []
+        ]
       }
     },
     {
@@ -304,6 +322,61 @@ export const EpsilonRhoRhoGrammar = (): Grammar => loadedEpsilonRhoRhoGrammar ||
                 }
               }
             ]
+          },
+          {
+            "$type": "Assignment",
+            "feature": "varUsage",
+            "operator": "=",
+            "terminal": {
+              "$type": "CrossReference",
+              "type": {
+                "$refText": "Variable"
+              }
+            },
+            "elements": []
+          }
+        ]
+      }
+    },
+    {
+      "$type": "ParserRule",
+      "parameters": [],
+      "name": "Variable",
+      "hiddenTokens": [],
+      "alternatives": {
+        "$type": "Group",
+        "elements": [
+          {
+            "$type": "Keyword",
+            "value": "var",
+            "elements": []
+          },
+          {
+            "$type": "Assignment",
+            "feature": "name",
+            "operator": "=",
+            "terminal": {
+              "$type": "RuleCall",
+              "arguments": [],
+              "rule": {
+                "$refText": "ID"
+              }
+            }
+          },
+          {
+            "$type": "Keyword",
+            "value": "="
+          },
+          {
+            "$type": "RuleCall",
+            "arguments": [],
+            "rule": {
+              "$refText": "Expression"
+            }
+          },
+          {
+            "$type": "Keyword",
+            "value": ";"
           }
         ]
       }
@@ -371,8 +444,20 @@ export const EpsilonRhoRhoGrammar = (): Grammar => loadedEpsilonRhoRhoGrammar ||
       "$type": "TerminalRule",
       "name": "PLUS_MINUS",
       "terminal": {
+        "$type": "CharacterRange",
+        "left": {
+          "$type": "Keyword",
+          "value": "#"
+        },
+        "elements": []
+      }
+    },
+    {
+      "$type": "TerminalRule",
+      "name": "ID",
+      "terminal": {
         "$type": "RegexToken",
-        "regex": "#",
+        "regex": "[a-zA-Z_][a-zA-Z_0-9]*",
         "elements": []
       }
     },

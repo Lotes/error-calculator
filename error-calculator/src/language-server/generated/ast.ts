@@ -5,7 +5,7 @@
 
 /* eslint-disable @typescript-eslint/array-type */
 /* eslint-disable @typescript-eslint/no-empty-interface */
-import { AstNode, AstReflection, isAstNode } from 'langium';
+import { AstNode, AstReflection, Reference, isAstNode } from 'langium';
 
 export interface Expression extends AstNode {
     readonly $container: Factor | Return;
@@ -37,6 +37,7 @@ export interface Factor extends AstNode {
     expression: Expression
     negated: Factor
     num: Number
+    varUsage: Reference<Variable>
 }
 
 export const Factor = 'Factor';
@@ -59,6 +60,7 @@ export function isNumber(item: unknown): item is Number {
 
 export interface Return extends AstNode {
     left: Expression
+    variables: Array<Variable>
 }
 
 export const Return = 'Return';
@@ -92,14 +94,25 @@ export function isTermTail(item: unknown): item is TermTail {
     return reflection.isInstance(item, TermTail);
 }
 
-export type EpsilonRhoRhoAstType = 'Expression' | 'ExpressionTail' | 'Factor' | 'Number' | 'Return' | 'Term' | 'TermTail';
+export interface Variable extends AstNode {
+    readonly $container: Return;
+    name: string
+}
 
-export type EpsilonRhoRhoAstReference = never;
+export const Variable = 'Variable';
+
+export function isVariable(item: unknown): item is Variable {
+    return reflection.isInstance(item, Variable);
+}
+
+export type EpsilonRhoRhoAstType = 'Expression' | 'ExpressionTail' | 'Factor' | 'Number' | 'Return' | 'Term' | 'TermTail' | 'Variable';
+
+export type EpsilonRhoRhoAstReference = 'Factor:varUsage';
 
 export class EpsilonRhoRhoAstReflection implements AstReflection {
 
     getAllTypes(): string[] {
-        return ['Expression', 'ExpressionTail', 'Factor', 'Number', 'Return', 'Term', 'TermTail'];
+        return ['Expression', 'ExpressionTail', 'Factor', 'Number', 'Return', 'Term', 'TermTail', 'Variable'];
     }
 
     isInstance(node: unknown, type: string): boolean {
@@ -119,6 +132,9 @@ export class EpsilonRhoRhoAstReflection implements AstReflection {
 
     getReferenceType(referenceId: EpsilonRhoRhoAstReference): string {
         switch (referenceId) {
+            case 'Factor:varUsage': {
+                return Variable;
+            }
             default: {
                 throw new Error(`${referenceId} is not a valid reference id.`);
             }
