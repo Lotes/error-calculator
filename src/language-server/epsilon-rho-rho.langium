@@ -1,6 +1,8 @@
 grammar EpsilonRhoRho
 
-entry Return:
+entry S: Return;
+
+Return:
     variables+=Variable* left=Expression
     ;
 
@@ -9,7 +11,8 @@ Expression:
     ;
 
 Term:
-    left=Factor ({infer Term.left=current} operator=('*'|'/') right=Factor)*;
+    left=Factor ({infer Term.left=current} operator=('*'|'/') right=Factor)*
+    ;
 
 Factor:
     num=Number

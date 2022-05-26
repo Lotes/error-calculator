@@ -15,9 +15,23 @@ export const EpsilonRhoRhoGrammar = (): Grammar => loadedEpsilonRhoRhoGrammar ||
     {
       "$type": "ParserRule",
       "parameters": [],
-      "name": "Return",
+      "name": "S",
       "hiddenTokens": [],
       "entry": true,
+      "alternatives": {
+        "$type": "RuleCall",
+        "arguments": [],
+        "rule": {
+          "$refText": "Return"
+        },
+        "elements": []
+      }
+    },
+    {
+      "$type": "ParserRule",
+      "parameters": [],
+      "name": "Return",
+      "hiddenTokens": [],
       "alternatives": {
         "$type": "Group",
         "elements": [
@@ -53,27 +67,6 @@ export const EpsilonRhoRhoGrammar = (): Grammar => loadedEpsilonRhoRhoGrammar ||
     {
       "$type": "ParserRule",
       "parameters": [],
-      "name": "ExpressionTailLike",
-      "hiddenTokens": [],
-      "fragment": true,
-      "alternatives": {
-        "$type": "Assignment",
-        "feature": "tail",
-        "operator": "=",
-        "terminal": {
-          "$type": "RuleCall",
-          "arguments": [],
-          "rule": {
-            "$refText": "ExpressionTail"
-          }
-        },
-        "cardinality": "?",
-        "elements": []
-      }
-    },
-    {
-      "$type": "ParserRule",
-      "parameters": [],
       "name": "Expression",
       "hiddenTokens": [],
       "alternatives": {
@@ -93,84 +86,51 @@ export const EpsilonRhoRhoGrammar = (): Grammar => loadedEpsilonRhoRhoGrammar ||
             "elements": []
           },
           {
-            "$type": "RuleCall",
-            "arguments": [],
-            "rule": {
-              "$refText": "ExpressionTailLike"
-            }
-          }
-        ]
-      }
-    },
-    {
-      "$type": "ParserRule",
-      "parameters": [],
-      "name": "ExpressionTail",
-      "hiddenTokens": [],
-      "alternatives": {
-        "$type": "Group",
-        "elements": [
-          {
-            "$type": "Assignment",
-            "feature": "operator",
-            "operator": "=",
-            "terminal": {
-              "$type": "Alternatives",
-              "elements": [
-                {
-                  "$type": "Keyword",
-                  "value": "+",
-                  "elements": []
-                },
-                {
-                  "$type": "Keyword",
-                  "value": "-"
+            "$type": "Group",
+            "elements": [
+              {
+                "$type": "Action",
+                "infer": true,
+                "type": "Expression",
+                "feature": "left",
+                "operator": "=",
+                "elements": []
+              },
+              {
+                "$type": "Assignment",
+                "feature": "operator",
+                "operator": "=",
+                "terminal": {
+                  "$type": "Alternatives",
+                  "elements": [
+                    {
+                      "$type": "Keyword",
+                      "value": "+",
+                      "elements": []
+                    },
+                    {
+                      "$type": "Keyword",
+                      "value": "-"
+                    }
+                  ]
                 }
-              ]
-            },
-            "elements": []
-          },
-          {
-            "$type": "Assignment",
-            "feature": "right",
-            "operator": "=",
-            "terminal": {
-              "$type": "RuleCall",
-              "arguments": [],
-              "rule": {
-                "$refText": "Term"
+              },
+              {
+                "$type": "Assignment",
+                "feature": "right",
+                "operator": "=",
+                "terminal": {
+                  "$type": "RuleCall",
+                  "arguments": [],
+                  "rule": {
+                    "$refText": "Term"
+                  }
+                }
               }
-            }
-          },
-          {
-            "$type": "RuleCall",
-            "arguments": [],
-            "rule": {
-              "$refText": "ExpressionTailLike"
-            }
+            ],
+            "cardinality": "*"
           }
         ]
-      }
-    },
-    {
-      "$type": "ParserRule",
-      "parameters": [],
-      "name": "TermTailLike",
-      "hiddenTokens": [],
-      "fragment": true,
-      "alternatives": {
-        "$type": "Assignment",
-        "feature": "tail",
-        "operator": "=",
-        "terminal": {
-          "$type": "RuleCall",
-          "arguments": [],
-          "rule": {
-            "$refText": "TermTail"
-          }
-        },
-        "cardinality": "?",
-        "elements": []
       }
     },
     {
@@ -195,61 +155,49 @@ export const EpsilonRhoRhoGrammar = (): Grammar => loadedEpsilonRhoRhoGrammar ||
             "elements": []
           },
           {
-            "$type": "RuleCall",
-            "arguments": [],
-            "rule": {
-              "$refText": "TermTailLike"
-            }
-          }
-        ]
-      }
-    },
-    {
-      "$type": "ParserRule",
-      "parameters": [],
-      "name": "TermTail",
-      "hiddenTokens": [],
-      "alternatives": {
-        "$type": "Group",
-        "elements": [
-          {
-            "$type": "Assignment",
-            "feature": "operator",
-            "operator": "=",
-            "terminal": {
-              "$type": "Alternatives",
-              "elements": [
-                {
-                  "$type": "Keyword",
-                  "value": "*",
-                  "elements": []
-                },
-                {
-                  "$type": "Keyword",
-                  "value": "/"
+            "$type": "Group",
+            "elements": [
+              {
+                "$type": "Action",
+                "infer": true,
+                "type": "Term",
+                "feature": "left",
+                "operator": "=",
+                "elements": []
+              },
+              {
+                "$type": "Assignment",
+                "feature": "operator",
+                "operator": "=",
+                "terminal": {
+                  "$type": "Alternatives",
+                  "elements": [
+                    {
+                      "$type": "Keyword",
+                      "value": "*",
+                      "elements": []
+                    },
+                    {
+                      "$type": "Keyword",
+                      "value": "/"
+                    }
+                  ]
                 }
-              ]
-            },
-            "elements": []
-          },
-          {
-            "$type": "Assignment",
-            "feature": "right",
-            "operator": "=",
-            "terminal": {
-              "$type": "RuleCall",
-              "arguments": [],
-              "rule": {
-                "$refText": "Factor"
+              },
+              {
+                "$type": "Assignment",
+                "feature": "right",
+                "operator": "=",
+                "terminal": {
+                  "$type": "RuleCall",
+                  "arguments": [],
+                  "rule": {
+                    "$refText": "Factor"
+                  }
+                }
               }
-            }
-          },
-          {
-            "$type": "RuleCall",
-            "arguments": [],
-            "rule": {
-              "$refText": "TermTailLike"
-            }
+            ],
+            "cardinality": "*"
           }
         ]
       }

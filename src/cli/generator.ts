@@ -2,6 +2,8 @@ import colors from "colors";
 import {
   Expression,
   Factor,
+  isExpression,
+  isTerm,
   Number,
   Return,
   Term,
@@ -70,11 +72,14 @@ class SolutionGeneratingVisitor {
     console.log("DONE");
   }
   visitExpression(expression: Expression) {
-    let tail = expression.tail;
-    this.visitTerm(expression.left);
-    while (tail != null) {
-      this.visitTerm(tail.right);
-      const isAddition = tail.operator === "+";
+    if(isExpression(expression.left)) {
+      this.visitExpression(expression.left);
+    } else {
+      this.visitTerm(expression.left);
+    }
+    if(expression.right != null) {
+      this.visitTerm(expression.right);
+      const isAddition = expression.operator === "+";
       const right = this.currentFrame.pop();
       const left = this.currentFrame.pop();
       const result = isAddition
@@ -84,15 +89,17 @@ class SolutionGeneratingVisitor {
       if (this.verbose) {
         console.log(colors.red(`${isAddition ? "ADD" : "SUB"}`));
       }
-      tail = tail.tail;
     }
   }
   visitTerm(term: Term): void {
-    let tail = term.tail;
-    this.visitFactor(term.left);
-    while (tail != null) {
-      this.visitFactor(tail.right);
-      const isMultiplication = tail.operator === "*";
+    if(isTerm(term.left)) {
+      this.visitTerm(term.left);
+    } else {
+      this.visitFactor(term.left);
+    }
+    if (term.right != null) {
+      this.visitFactor(term.right);
+      const isMultiplication = term.operator === "*";
       const right = this.currentFrame.pop();
       const left = this.currentFrame.pop();
       const result = isMultiplication
@@ -102,7 +109,6 @@ class SolutionGeneratingVisitor {
       if (this.verbose) {
         console.log(colors.red(`${isMultiplication ? "MUL" : "DIV"}`));
       }
-      tail = tail.tail;
     }
   }
   visitFactor(factor: Factor): void {

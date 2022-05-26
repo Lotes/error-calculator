@@ -7,10 +7,19 @@
 /* eslint-disable @typescript-eslint/no-empty-interface */
 import { AstNode, AstReflection, Reference, isAstNode } from 'langium';
 
+export type S = Return;
+
+export const S = 'S';
+
+export function isS(item: unknown): item is S {
+    return reflection.isInstance(item, S);
+}
+
 export interface Expression extends AstNode {
-    readonly $container: Factor | Return;
-    left: Term
-    tail: ExpressionTail
+    readonly $container: Expression | Factor | Return;
+    left: Expression | Term
+    operator: '+' | '-'
+    right: Term
 }
 
 export const Expression = 'Expression';
@@ -19,21 +28,8 @@ export function isExpression(item: unknown): item is Expression {
     return reflection.isInstance(item, Expression);
 }
 
-export interface ExpressionTail extends AstNode {
-    readonly $container: Expression | ExpressionTail;
-    operator: '+' | '-'
-    right: Term
-    tail: ExpressionTail
-}
-
-export const ExpressionTail = 'ExpressionTail';
-
-export function isExpressionTail(item: unknown): item is ExpressionTail {
-    return reflection.isInstance(item, ExpressionTail);
-}
-
 export interface Factor extends AstNode {
-    readonly $container: Factor | Term | TermTail;
+    readonly $container: Factor | Term;
     expression: Expression
     negated: Factor
     num: Number
@@ -70,28 +66,16 @@ export function isReturn(item: unknown): item is Return {
 }
 
 export interface Term extends AstNode {
-    readonly $container: Expression | ExpressionTail;
-    left: Factor
-    tail: TermTail
+    readonly $container: Expression | Term;
+    left: Factor | Term
+    operator: '*' | '/'
+    right: Factor
 }
 
 export const Term = 'Term';
 
 export function isTerm(item: unknown): item is Term {
     return reflection.isInstance(item, Term);
-}
-
-export interface TermTail extends AstNode {
-    readonly $container: Term | TermTail;
-    operator: '*' | '/'
-    right: Factor
-    tail: TermTail
-}
-
-export const TermTail = 'TermTail';
-
-export function isTermTail(item: unknown): item is TermTail {
-    return reflection.isInstance(item, TermTail);
 }
 
 export interface Variable extends AstNode {
@@ -105,14 +89,14 @@ export function isVariable(item: unknown): item is Variable {
     return reflection.isInstance(item, Variable);
 }
 
-export type EpsilonRhoRhoAstType = 'Expression' | 'ExpressionTail' | 'Factor' | 'Number' | 'Return' | 'Term' | 'TermTail' | 'Variable';
+export type EpsilonRhoRhoAstType = 'Expression' | 'Factor' | 'Number' | 'Return' | 'S' | 'Term' | 'Variable';
 
 export type EpsilonRhoRhoAstReference = 'Factor:varUsage';
 
 export class EpsilonRhoRhoAstReflection implements AstReflection {
 
     getAllTypes(): string[] {
-        return ['Expression', 'ExpressionTail', 'Factor', 'Number', 'Return', 'Term', 'TermTail', 'Variable'];
+        return ['Expression', 'Factor', 'Number', 'Return', 'S', 'Term', 'Variable'];
     }
 
     isInstance(node: unknown, type: string): boolean {
@@ -124,6 +108,9 @@ export class EpsilonRhoRhoAstReflection implements AstReflection {
             return true;
         }
         switch (subtype) {
+            case Return: {
+                return this.isSubtype(S, supertype);
+            }
             default: {
                 return false;
             }

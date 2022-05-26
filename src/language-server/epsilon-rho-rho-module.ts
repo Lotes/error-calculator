@@ -1,41 +1,56 @@
 import {
-    createDefaultModule, createDefaultSharedModule, DefaultSharedModuleContext, inject,
-    LangiumServices, LangiumSharedServices, Module, PartialLangiumServices
-} from 'langium';
-import { EpsilonRhoRhoGeneratedModule, EpsilonRhoRhoGeneratedSharedModule } from './generated/module';
-import { EpsilonRhoRhoValidationRegistry, EpsilonRhoRhoValidator } from './epsilon-rho-rho-validator';
-import { EpsilonRhoRhoScopeComputation } from './epsilon-rho-rho-scope';
-import { EpsilonRhoRhoScopeProvider  } from "./epsilon-rho-rho-scope-provider";
+  createDefaultModule,
+  createDefaultSharedModule,
+  DefaultNameProvider,
+  DefaultSharedModuleContext,
+  inject,
+  LangiumServices,
+  LangiumSharedServices,
+  Module,
+  PartialLangiumServices,
+} from "langium";
+import {
+  EpsilonRhoRhoGeneratedModule,
+  EpsilonRhoRhoGeneratedSharedModule,
+} from "./generated/module";
+import {
+  EpsilonRhoRhoValidationRegistry,
+  EpsilonRhoRhoValidator,
+} from "./epsilon-rho-rho-validator";
 
 /**
  * Declaration of custom services - add your own service classes here.
  */
 export type EpsilonRhoRhoAddedServices = {
-    validation: {
-        EpsilonRhoRhoValidator: EpsilonRhoRhoValidator
-    }
-}
+  validation: {
+    EpsilonRhoRhoValidator: EpsilonRhoRhoValidator;
+  };
+};
 
 /**
  * Union of Langium default services and your custom services - use this as constructor parameter
  * of custom service classes.
  */
-export type EpsilonRhoRhoServices = LangiumServices & EpsilonRhoRhoAddedServices
+export type EpsilonRhoRhoServices = LangiumServices &
+  EpsilonRhoRhoAddedServices;
 
 /**
  * Dependency injection module that overrides Langium default services and contributes the
  * declared custom services. The Langium defaults can be partially specified to override only
  * selected services, while the custom services must be fully specified.
  */
-export const EpsilonRhoRhoModule: Module<EpsilonRhoRhoServices, PartialLangiumServices & EpsilonRhoRhoAddedServices> = {
-    references: { 
-       // ScopeProvider: (services) => new EpsilonRhoRhoScopeProvider(services),
-        //ScopeComputation: (services) => new EpsilonRhoRhoScopeComputation(services),
-    },
-    validation: {
-        ValidationRegistry: (services) => new EpsilonRhoRhoValidationRegistry(services),
-        EpsilonRhoRhoValidator: () => new EpsilonRhoRhoValidator()
-    }
+export const EpsilonRhoRhoModule: Module<
+  EpsilonRhoRhoServices,
+  PartialLangiumServices & EpsilonRhoRhoAddedServices
+> = {
+  references: {
+    NameProvider: () => new DefaultNameProvider()
+  },
+  validation: {
+    ValidationRegistry: (services) =>
+      new EpsilonRhoRhoValidationRegistry(services),
+    EpsilonRhoRhoValidator: () => new EpsilonRhoRhoValidator(),
+  },
 };
 
 /**
@@ -53,19 +68,21 @@ export const EpsilonRhoRhoModule: Module<EpsilonRhoRhoServices, PartialLangiumSe
  * @param context Optional module context with the LSP connection
  * @returns An object wrapping the shared services and the language-specific services
  */
-export function createEpsilonRhoRhoServices(context?: DefaultSharedModuleContext): {
-    shared: LangiumSharedServices,
-    EpsilonRhoRho: EpsilonRhoRhoServices
+export function createEpsilonRhoRhoServices(
+  context?: DefaultSharedModuleContext
+): {
+  shared: LangiumSharedServices;
+  EpsilonRhoRho: EpsilonRhoRhoServices;
 } {
-    const shared = inject(
-        createDefaultSharedModule(context),
-        EpsilonRhoRhoGeneratedSharedModule
-    );
-    const EpsilonRhoRho = inject(
-        createDefaultModule({ shared }),
-        EpsilonRhoRhoGeneratedModule,
-        EpsilonRhoRhoModule
-    );
-    shared.ServiceRegistry.register(EpsilonRhoRho);
-    return { shared, EpsilonRhoRho };
+  const shared = inject(
+    createDefaultSharedModule(context),
+    EpsilonRhoRhoGeneratedSharedModule
+  );
+  const EpsilonRhoRho = inject(
+    createDefaultModule({ shared }),
+    EpsilonRhoRhoGeneratedModule,
+    EpsilonRhoRhoModule
+  );
+  shared.ServiceRegistry.register(EpsilonRhoRho);
+  return { shared, EpsilonRhoRho };
 }
